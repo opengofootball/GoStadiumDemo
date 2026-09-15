@@ -1,0 +1,60 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://pitch/fc_pitch.gd" id="1_script"]
+[ext_resource type="Material" path="res://pitch/fc_pitch_material.tres" id="2_pitch_mat"]
+[ext_resource type="Material" path="res://pitch/ad_banner_touchline_material.tres" id="3_touch_mat"]
+[ext_resource type="Material" path="res://pitch/ad_banner_goal_material.tres" id="4_goal_mat"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_turf"]
+size = Vector2(90, 130)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(110, 1, 150)
+
+[sub_resource type="QuadMesh" id="QuadMesh_touch"]
+size = Vector2(93, 1.05)
+orientation = 2
+
+[sub_resource type="QuadMesh" id="QuadMesh_goal"]
+size = Vector2(56, 1.05)
+orientation = 2
+
+[node name="FCPitch" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="PitchPlane" type="MeshInstance3D" parent="."]
+mesh = SubResource("PlaneMesh_turf")
+material_override = ExtResource("2_pitch_mat")
+extra_cull_margin = 80.0
+
+[node name="GroundCollision" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GroundCollision"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+shape = SubResource("BoxShape3D_floor")
+
+[node name="AdPanels" type="Node3D" parent="."]
+
+[node name="AdPanel_Touch_W" type="MeshInstance3D" parent="AdPanels"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -37.5, 0.525, 0)
+mesh = SubResource("QuadMesh_touch")
+material_override = ExtResource("3_touch_mat")
+extra_cull_margin = 20.0
+
+[node name="AdPanel_Touch_E" type="MeshInstance3D" parent="AdPanels"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 37.5, 0.525, 0)
+mesh = SubResource("QuadMesh_touch")
+material_override = ExtResource("3_touch_mat")
+extra_cull_margin = 20.0
+
+[node name="AdPanel_Goal_N" type="MeshInstance3D" parent="AdPanels"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.525, -60)
+mesh = SubResource("QuadMesh_goal")
+material_override = ExtResource("4_goal_mat")
+extra_cull_margin = 20.0
+
+[node name="AdPanel_Goal_S" type="MeshInstance3D" parent="AdPanels"]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0.525, 60)
+mesh = SubResource("QuadMesh_goal")
+material_override = ExtResource("4_goal_mat")
+extra_cull_margin = 20.0

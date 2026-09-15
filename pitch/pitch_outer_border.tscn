@@ -1,0 +1,38 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Texture2D" path="res://pitch/Trawa_03_1.png" id="1_tex"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_ns"]
+size = Vector2(12, 117)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_ew"]
+size = Vector2(92, 12)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_grass"]
+resource_name = "GrassBorderMaterial"
+roughness = 0.85
+metallic = 0.0
+albedo_texture = ExtResource("1_tex")
+uv1_scale = Vector3(0.15, 0.15, 0.15)
+
+[node name="PitchOuterBorder" type="Node3D"]
+
+[node name="PitchOuterBorderLeft" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, -0.02, 0)
+material_override = SubResource("StandardMaterial3D_grass")
+mesh = SubResource("PlaneMesh_ns")
+
+[node name="PitchOuterBorderRight" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, -0.02, 0)
+material_override = SubResource("StandardMaterial3D_grass")
+mesh = SubResource("PlaneMesh_ns")
+
+[node name="PitchOuterBorderNorth" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, -58.5)
+material_override = SubResource("StandardMaterial3D_grass")
+mesh = SubResource("PlaneMesh_ew")
+
+[node name="PitchOuterBorderSouth" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 58.5)
+material_override = SubResource("StandardMaterial3D_grass")
+mesh = SubResource("PlaneMesh_ew")

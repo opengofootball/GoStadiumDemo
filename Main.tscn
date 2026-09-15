@@ -1,0 +1,251 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://main.gd" id="1_main"]
+[ext_resource type="Environment" path="res://sky/stadium_sky.tres" id="2_env"]
+[ext_resource type="Script" path="res://camera/walk_camera.gd" id="3_cam"]
+[ext_resource type="PackedScene" path="res://pitch/common_pitch.tscn" id="4_pitch"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.08, 0.09, 0.12, 0.85)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+content_margin_left = 14.0
+content_margin_top = 10.0
+content_margin_right = 14.0
+content_margin_bottom = 10.0
+
+[node name="Main" type="Node3D"]
+script = ExtResource("1_main")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource("2_env")
+
+[node name="SunLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.965926, -0.183013, 0.183013, 0, 0.707107, 0.707107, -0.258819, -0.683013, 0.683013, 0, 100, 0)
+shadow_enabled = true
+shadow_bias = 0.03
+directional_shadow_mode = 2
+directional_shadow_max_distance = 250.0
+
+[node name="WalkCamera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
+near = 0.15
+far = 1200.0
+script = ExtResource("3_cam")
+move_speed = 8.0
+sprint_factor = 3.0
+
+[node name="CommonPitch" parent="." instance=ExtResource("4_pitch")]
+
+[node name="Goals" type="Node3D" parent="."]
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="MainPanel" type="PanelContainer" parent="HUD"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -440.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = 320.0
+grow_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBox" type="VBoxContainer" parent="HUD/MainPanel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="HUD/MainPanel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "🏟️ Modern Stadium Walkthrough"
+horizontal_alignment = 1
+
+[node name="HSeparator1" type="HSeparator" parent="HUD/MainPanel/VBox"]
+layout_mode = 2
+
+[node name="ViewpointsTitle" type="Label" parent="HUD/MainPanel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "Quick Teleport Viewpoints:"
+
+[node name="ViewpointsRow" type="HBoxContainer" parent="HUD/MainPanel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="BtnPitch" type="Button" parent="HUD/MainPanel/VBox/ViewpointsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Pitch"
+
+[node name="BtnVIP" type="Button" parent="HUD/MainPanel/VBox/ViewpointsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "VIP"
+
+[node name="BtnRoof" type="Button" parent="HUD/MainPanel/VBox/ViewpointsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Roof"
+
+[node name="BtnSouth" type="Button" parent="HUD/MainPanel/VBox/ViewpointsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Goal S"
+
+[node name="BtnNorth" type="Button" parent="HUD/MainPanel/VBox/ViewpointsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Goal N"
+
+[node name="HSeparator2" type="HSeparator" parent="HUD/MainPanel/VBox"]
+layout_mode = 2
+
+[node name="SpeedBox" type="HBoxContainer" parent="HUD/MainPanel/VBox"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HUD/MainPanel/VBox/SpeedBox"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "Speed:"
+
+[node name="SpeedSlider" type="HSlider" parent="HUD/MainPanel/VBox/SpeedBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+min_value = 1.0
+max_value = 60.0
+step = 0.5
+value = 8.0
+
+[node name="SpeedValue" type="Label" parent="HUD/MainPanel/VBox/SpeedBox"]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+text = "8"
+horizontal_alignment = 2
+
+[node name="TimeBox" type="HBoxContainer" parent="HUD/MainPanel/VBox"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HUD/MainPanel/VBox/TimeBox"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "Time of Day:"
+
+[node name="TimeSlider" type="HSlider" parent="HUD/MainPanel/VBox/TimeBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+max_value = 24.0
+step = 0.1
+value = 13.5
+
+[node name="TimeValue" type="Label" parent="HUD/MainPanel/VBox/TimeBox"]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+text = "13:30"
+horizontal_alignment = 2
+
+[node name="CloudBox" type="HBoxContainer" parent="HUD/MainPanel/VBox"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HUD/MainPanel/VBox/CloudBox"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "Clouds Cover:"
+
+[node name="CoverageSlider" type="HSlider" parent="HUD/MainPanel/VBox/CloudBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+max_value = 0.99
+step = 0.01
+value = 0.25
+
+[node name="DensityBox" type="HBoxContainer" parent="HUD/MainPanel/VBox"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HUD/MainPanel/VBox/DensityBox"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "Clouds Density:"
+
+[node name="DensitySlider" type="HSlider" parent="HUD/MainPanel/VBox/DensityBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+min_value = 0.01
+max_value = 0.99
+step = 0.01
+value = 0.05
+
+[node name="InstructionsPanel" type="PanelContainer" parent="HUD"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = -120.0
+offset_right = 420.0
+offset_bottom = -16.0
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="Instructions" type="Label" parent="HUD/InstructionsPanel"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.92, 0.95, 1)
+theme_override_font_sizes/font_size = 13
+text = "🎮 Controls:
+ • WASD: Walk / Fly around
+ • Mouse: Look around (captured)
+ • Shift: Sprint speed boost
+ • Space / E: Ascend | Ctrl / Q: Descend
+ • Mouse Wheel: Adjust speed
+ • ESC / Tab: Toggle mouse capture | F1: Hide HUD"
+
+[node name="MouseHint" type="Label" parent="HUD"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -180.0
+offset_top = 12.0
+offset_right = 180.0
+offset_bottom = 35.0
+grow_horizontal = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.8)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 13
+text = "Press [ESC] to release mouse for UI"
+horizontal_alignment = 1
+
+[node name="MessageToast" type="Label" parent="HUD"]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -250.0
+offset_right = 200.0
+offset_bottom = -215.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 0.95, 0.6, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.9)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 16
+text = "Loaded Stadium"
+horizontal_alignment = 1
+
+[connection signal="pressed" from="HUD/MainPanel/VBox/ViewpointsRow/BtnPitch" to="." method="teleport_to_viewpoint" binds= ["pitch"]]
+[connection signal="pressed" from="HUD/MainPanel/VBox/ViewpointsRow/BtnVIP" to="." method="teleport_to_viewpoint" binds= ["vip"]]
+[connection signal="pressed" from="HUD/MainPanel/VBox/ViewpointsRow/BtnRoof" to="." method="teleport_to_viewpoint" binds= ["roof"]]
+[connection signal="pressed" from="HUD/MainPanel/VBox/ViewpointsRow/BtnSouth" to="." method="teleport_to_viewpoint" binds= ["goal1"]]
+[connection signal="pressed" from="HUD/MainPanel/VBox/ViewpointsRow/BtnNorth" to="." method="teleport_to_viewpoint" binds= ["goal2"]]
+[connection signal="value_changed" from="HUD/MainPanel/VBox/SpeedBox/SpeedSlider" to="." method="_on_speed_slider_value_changed"]
+[connection signal="value_changed" from="HUD/MainPanel/VBox/TimeBox/TimeSlider" to="." method="_on_time_slider_value_changed"]
+[connection signal="value_changed" from="HUD/MainPanel/VBox/CloudBox/CoverageSlider" to="." method="_on_coverage_slider_value_changed"]
+[connection signal="value_changed" from="HUD/MainPanel/VBox/DensityBox/DensitySlider" to="." method="_on_density_slider_value_changed"]

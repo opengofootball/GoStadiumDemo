@@ -1,0 +1,22 @@
+[gd_resource type="ShaderMaterial" load_steps=4 format=3]
+
+[ext_resource type="Shader" path="res://pitch/fc_pitch.gdshader" id="1_shader"]
+[ext_resource type="Texture2D" path="res://pitch/Trawa_03_1.png" id="2_grass"]
+[ext_resource type="Texture2D" path="res://pitch/pitch_lines_mask.png" id="3_lines"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_shader")
+shader_parameter/grass_tint = Color(0.66, 0.9, 0.66, 1)
+shader_parameter/grass_tile = 6.0
+shader_parameter/lines_min = Vector2(-45, -65)
+shader_parameter/lines_size = Vector2(90, 130)
+shader_parameter/mow_axis = 1
+shader_parameter/mow_count = 15.0
+shader_parameter/mow_span = 130.0
+shader_parameter/mow_darkness = 0.78
+shader_parameter/line_color = Color(1, 1, 1, 1)
+shader_parameter/roughness_base = 0.86
+shader_parameter/wetness = 0.12
+shader_parameter/grass_tex = ExtResource("2_grass")
+shader_parameter/pitch_lines_tex = ExtResource("3_lines")

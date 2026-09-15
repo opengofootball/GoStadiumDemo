@@ -1,0 +1,9 @@
+# Godot 4 specific ignores
+.godot/
+*.import.tmp
+
+# WSL / Windows metadata
+*.Zone.Identifier
+
+# Godot Engine executable binary
+Godot_v4.6.3-stable_linux.x86_64
