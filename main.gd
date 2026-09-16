@@ -1,14 +1,15 @@
 extends Node3D
 
 ## Main scene for the isolated Common Pitch (real-world metres, 1 unit = 1 m).
-## The modern_stadium shell is NOT loaded for now - only the CommonPitch (130x90 turf
-## with a 105x68 play area + textured LED ad panels) and the two separate goals.
+## The modern_stadium shell is NOT loaded for now. The CommonPitch node is a fully
+## self-contained module: turf + regulation lines, LED ad hoardings, corner flags,
+## ground collision and the two goals (spawned by CommonPitch from its own exported
+## goal_model_scene PackedScene).
 
 @onready var world_env: WorldEnvironment = $WorldEnvironment
 @onready var sun_light: DirectionalLight3D = $SunLight
 @onready var walk_camera: WalkCamera = $WalkCamera
 @onready var common_pitch: Node3D = $CommonPitch
-@onready var goals_root: Node3D = $Goals
 
 # UI nodes
 @onready var ui_panel: Control = $HUD/MainPanel
@@ -21,31 +22,6 @@ extends Node3D
 @onready var density_slider: HSlider = $HUD/MainPanel/VBox/DensityBox/DensitySlider
 @onready var mouse_hint_label: Label = $HUD/MouseHint
 @onready var message_toast: Label = $HUD/MessageToast
-
-## Small, packed goal model (513 KB, 4 meshes: goalposts + net + 2 net poles).
-## Modeled in metres. Exposed as a PackedScene variable: drag a different goal .glb into
-## this field in the Inspector to swap goal models without touching code.
-@export var goal_model_scene: PackedScene = preload("res://pitch/modern_stadium_goal.glb")
-
-## The goal model's upright posts are 4.928 m apart (center-to-center) and 2.018 m tall:
-##   goal_width_scale  4.928 -> 7.32 m (exact FIFA 7.32 m regulation post-to-post mouth width)
-##   goal_height_scale 2.018 -> 2.44 m (exact FIFA 2.44 m regulation crossbar height)
-@export var goal_width_scale: float = 1.4855
-@export var goal_height_scale: float = 1.2091
-
-# Pitch reference (metres) - CommonPitch is centred at the world origin.
-const GROUND_Y: float = 0.0
-const PLAY_L: float = 105.0
-const HALF_LEN: float = PLAY_L * 0.5   # goal lines at +/-52.5
-
-# Goal model geometry (metres):
-# In modern_stadium_goal.glb root space:
-# - upright posts are centered at local Z = 0.75, X = 0.0 (pillars at X = +/-2.5)
-# - the front face of the posts is at local Z = 0.80
-# Shifting pivot by -0.75 along Z puts the post center EXACTLY at the goal node's origin (Z = 0),
-# which aligns the posts dead-center on the white goal line.
-const GOAL_MESH_CENTER_X: float = 0.0
-const GOAL_MESH_FRONT_Z: float = 0.75
 
 # Viewpoints (metres)
 const VIEWPOINTS = {
@@ -63,7 +39,6 @@ func _ready() -> void:
 	if world_env and world_env.environment and world_env.environment.sky:
 		sky_material = world_env.environment.sky.sky_material
 
-	_spawn_goals()
 	if title_label:
 		title_label.text = "⚽ Common Pitch (130×90 m)"
 	teleport_to_viewpoint("pitch")
@@ -78,122 +53,6 @@ func _ready() -> void:
 		coverage_slider.value = sky_material.get_shader_parameter("cloud_coverage")
 	if density_slider and sky_material:
 		density_slider.value = sky_material.get_shader_parameter("cloud_density")
-
-func _spawn_goals() -> void:
-	for c in goals_root.get_children():
-		goals_root.remove_child(c)
-		c.queue_free()
-
-	if goal_model_scene == null:
-		push_warning("Goal model PackedScene is not assigned in the Inspector.")
-		return
-
-	# The goal model opens toward +Z (mouth at +Z, net recedes toward -Z) and its width
-	# spans X. Place each goal node exactly on the corresponding goal line (Z = +/-52.5)
-	# and rotate so the mouth faces the pitch centre:
-	#   North goal line (min Z): mouth faces +Z -> rotation.y = 0
-	#   South goal line (max Z): mouth faces -Z -> rotation.y = PI
-	_spawn_goal_instance(goal_model_scene, "GoalNorth",
-		Vector3(0.0, GROUND_Y, -HALF_LEN), 0.0)
-	_spawn_goal_instance(goal_model_scene, "GoalSouth",
-		Vector3(0.0, GROUND_Y, HALF_LEN), PI)
-
-func _spawn_goal_instance(scn: PackedScene, node_name: String, world_pos: Vector3, rot_y: float) -> void:
-	# Outer node sits exactly on the goal line; rotation.y aims the mouth toward the pitch.
-	var node = Node3D.new()
-	node.name = node_name
-	node.position = world_pos
-	node.rotation.y = rot_y
-	goals_root.add_child(node)
-
-	# Inner pivot applies independent width/height scale (metres are 1:1) and re-centres the
-	# mesh so the mouth plane sits exactly on the goal node's origin (on the goal line).
-	var sx: float = goal_width_scale
-	var sy: float = goal_height_scale
-	var pivot = Node3D.new()
-	pivot.name = node_name + "_Pivot"
-	pivot.scale = Vector3(sx, sy, sx)
-	pivot.position = Vector3(-GOAL_MESH_CENTER_X * sx, 0.0, -GOAL_MESH_FRONT_Z * sx)
-	node.add_child(pivot)
-
-	var model = scn.instantiate()
-	pivot.add_child(model)
-
-	_build_goal_frame_collision(model, pivot, node, node_name)
-
-func _build_goal_frame_collision(model: Node, pivot: Node3D, host: Node3D, node_name: String) -> void:
-	# Compute a combined AABB in the model-root local space using ONLY local transforms
-	# (accumulated up the parent chain), so it is valid synchronously at _ready time.
-	var local_combined := AABB()
-	var first := true
-	for child in model.find_children("*", "MeshInstance3D", true, false):
-		var mi := child as MeshInstance3D
-		if mi == null:
-			continue
-		var xf := Transform3D.IDENTITY
-		var n: Node = mi
-		while n != null and n != model:
-			var node3d := n as Node3D
-			if node3d == null:
-				break
-			xf = node3d.get_transform() * xf
-			n = n.get_parent()
-		var a: AABB = xf * mi.get_aabb()
-		if first:
-			local_combined = a
-			first = false
-		else:
-			local_combined = local_combined.merge(a)
-	if first:
-		return
-
-	# Convert to the goal node's (host's) local space by applying the pivot transform.
-	var pt: Transform3D = pivot.get_transform()
-	var combined: AABB = pt * local_combined
-
-	# Geometry helpers (host-local, metres). Mouth plane is at host-local Z = 0.
-	var hw := combined.size.x * 0.5
-	var base_y := combined.position.y
-	var frame_height := combined.size.y
-	var frame_depth := combined.size.z
-	var post_thick := clampf(combined.size.x * 0.02, 0.08, 0.16)
-	var mouth_z := 0.0
-
-	# Post/crossbar frame collision (thin boxes, so shots pass into the net).
-	var body := StaticBody3D.new()
-	body.name = node_name + "_FrameCollision"
-	body.add_child(_make_box_collision("Post_L",
-		Vector3(-hw + post_thick * 0.5, base_y + frame_height * 0.5, mouth_z),
-		Vector3(post_thick, frame_height, post_thick)))
-	body.add_child(_make_box_collision("Post_R",
-		Vector3(hw - post_thick * 0.5, base_y + frame_height * 0.5, mouth_z),
-		Vector3(post_thick, frame_height, post_thick)))
-	body.add_child(_make_box_collision("Crossbar",
-		Vector3(0, combined.position.y + frame_height - post_thick * 0.5, mouth_z),
-		Vector3(combined.size.x, post_thick, post_thick)))
-	host.add_child(body)
-
-	# Scoring volume: a box recessed behind the goal line, inside the aperture.
-	var score := Area3D.new()
-	score.name = node_name + "_ScoreArea"
-	score.collision_layer = 4
-	score.collision_mask = 0
-	var scol := CollisionShape3D.new()
-	var sbox := BoxShape3D.new()
-	sbox.size = Vector3(combined.size.x - post_thick * 2.0, frame_height - post_thick, frame_depth * 0.6)
-	scol.shape = sbox
-	scol.position = Vector3(0, base_y + (frame_height - post_thick) * 0.5, -frame_depth * 0.3)
-	score.add_child(scol)
-	host.add_child(score)
-
-func _make_box_collision(shape_name: String, center: Vector3, size: Vector3) -> CollisionShape3D:
-	var c := CollisionShape3D.new()
-	c.name = shape_name
-	var b := BoxShape3D.new()
-	b.size = size
-	c.shape = b
-	c.position = center
-	return c
 
 func teleport_to_viewpoint(vp_key: String) -> void:
 	if VIEWPOINTS.has(vp_key):

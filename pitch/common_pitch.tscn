@@ -141,3 +141,5 @@ transform = Transform3D(0.543583, 0, -0.839356, 0, 1, 0, 0.839356, 0, 0.543583, 
 
 [node name="Flag_SE" parent="CornerFlags" instance=ExtResource("5_flag")]
 transform = Transform3D(-0.543583, 0, -0.839356, 0, 1, 0, 0.839356, 0, -0.543583, 34, 0, 52.5)
+
+[node name="Goals" type="Node3D" parent="."]

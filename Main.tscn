@@ -39,8 +39,6 @@ sprint_factor = 3.0
 
 [node name="CommonPitch" parent="." instance=ExtResource("4_pitch")]
 
-[node name="Goals" type="Node3D" parent="."]
-
 [node name="HUD" type="CanvasLayer" parent="."]
 
 [node name="MainPanel" type="PanelContainer" parent="HUD"]
