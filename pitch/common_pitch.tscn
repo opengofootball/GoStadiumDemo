@@ -1,9 +1,10 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://pitch/common_pitch.gd" id="1_script"]
 [ext_resource type="Material" path="res://pitch/fc_pitch_material.tres" id="2_pitch_mat"]
 [ext_resource type="Material" path="res://pitch/ad_banner_touchline_material.tres" id="3_touch_mat"]
 [ext_resource type="Material" path="res://pitch/ad_banner_goal_material.tres" id="4_goal_mat"]
+[ext_resource type="PackedScene" path="res://pitch/corner_flag.tscn" id="5_flag"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_turf"]
 size = Vector2(90, 130)
@@ -58,3 +59,17 @@ transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0.5
 mesh = SubResource("QuadMesh_goal")
 material_override = ExtResource("4_goal_mat")
 extra_cull_margin = 20.0
+
+[node name="CornerFlags" type="Node3D" parent="."]
+
+[node name="Flag_NW" parent="CornerFlags" instance=ExtResource("5_flag")]
+transform = Transform3D(0.543583, 0, -0.839356, 0, 1, 0, 0.839356, 0, 0.543583, -34, 0, -52.5)
+
+[node name="Flag_NE" parent="CornerFlags" instance=ExtResource("5_flag")]
+transform = Transform3D(-0.543583, 0, -0.839356, 0, 1, 0, 0.839356, 0, -0.543583, 34, 0, -52.5)
+
+[node name="Flag_SW" parent="CornerFlags" instance=ExtResource("5_flag")]
+transform = Transform3D(0.543583, 0, 0.839356, 0, 1, 0, -0.839356, 0, 0.543583, -34, 0, 52.5)
+
+[node name="Flag_SE" parent="CornerFlags" instance=ExtResource("5_flag")]
+transform = Transform3D(-0.543583, 0, 0.839356, 0, 1, 0, -0.839356, 0, -0.543583, 34, 0, 52.5)
