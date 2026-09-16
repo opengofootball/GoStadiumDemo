@@ -2,6 +2,9 @@
 .godot/
 *.import.tmp
 
+# Godot import metadata files (regenerated automatically by the editor on each machine)
+*.import
+
 # WSL / Windows metadata
 *.Zone.Identifier
 
