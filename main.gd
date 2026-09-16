@@ -229,10 +229,22 @@ func _process(delta: float) -> void:
 		sky_material.set_shader_parameter("cloud_time_offset", current_offset + delta * 0.5)
 
 func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("toggle_gui"):
+	# Defensive input handling: never call is_action_pressed() on an action that
+	# might be absent from the InputMap (e.g. if project.godot is out of sync on
+	# another machine), because Godot throws a C++ assertion in that case.
+	# Each action has a hard-coded physical-key fallback so the control always works.
+	if _action_pressed(event, "toggle_gui", KEY_F1):
 		ui_panel.visible = not ui_panel.visible
-	elif event.is_action_pressed("view_pitch"):
+	elif _action_pressed(event, "view_pitch", KEY_1):
 		teleport_to_viewpoint("pitch")
+
+func _action_pressed(event: InputEvent, action: StringName, fallback_keycode: Key) -> bool:
+	# Prefer the mapped action when it exists in the InputMap...
+	if InputMap.has_action(action) and event.is_action_pressed(action):
+		return true
+	# ...otherwise fall back to the raw physical key so we never error out.
+	var key_event := event as InputEventKey
+	return key_event != null and key_event.pressed and not key_event.echo and key_event.physical_keycode == fallback_keycode
 
 func _on_camera_speed_changed(new_speed: float) -> void:
 	if speed_slider:
