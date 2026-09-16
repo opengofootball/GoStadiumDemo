@@ -23,6 +23,8 @@ rings = 6
 
 [sub_resource type="QuadMesh" id="QuadMesh_cloth"]
 size = Vector2(0.45, 0.32)
+subdivide_width = 16
+subdivide_depth = 8
 orientation = 2
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_pole"]
@@ -44,7 +46,7 @@ material_override = SubResource("StandardMaterial3D_pole")
 extra_cull_margin = 2.0
 
 [node name="FlagCloth" type="MeshInstance3D" parent="."]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0.235, 1.39, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.24, 1.36, 0)
 mesh = SubResource("QuadMesh_cloth")
 material_override = ExtResource("1_flag_mat")
 extra_cull_margin = 2.0
