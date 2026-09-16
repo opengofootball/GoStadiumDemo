@@ -10,9 +10,23 @@ extends Node3D
 @export_group("Ad Boards")
 @export var enable_ad_boards: bool = true
 @export var ad_change_interval: float = 5.0
+# Sinks the whole pitch (grass + lines + goals + ad boards + flags + collision) a
+# little below the stadium floor so the turf is not riding too high at the seam.
+@export var pitch_y_offset: float = -0.20
 ## Sponsor banners cycled by the LED boards. Left empty, the script auto-loads the
 ## banners from res://assets/ads/. Drag more PNGs into this array to extend the rotation.
 @export var ad_textures: Array[Texture2D] = []
+
+@export_group("Dugout Cutout (per-stadium)")
+## Discards grass inside the two sunken team-dugout pits so it never floods the
+## seats/footwell. Bounded on both min and max |Z| so the midfield gap between the
+## home and away dugouts stays grassed. Tune these per stadium; set dugout_max_z = 0
+## to disable the cutout entirely (e.g. a stadium with a running track, like Neftyanik).
+## Modern Stadium default (measured from the concrete pit walls):
+@export var dugout_min_x: float = -39.1   # back wall of the pit
+@export var dugout_max_x: float = -35.3   # front curb of the pit
+@export var dugout_min_z: float = 8.25    # inner edge (toward midfield)
+@export var dugout_max_z: float = 16.85   # outer edge (toward the corner)
 
 @export_group("Goals")
 ## Goal model, authored in metres (513 KB, 4 meshes: goalposts + net + 2 net poles).
@@ -41,8 +55,24 @@ var _timer: float = 0.0
 var _phase: int = 0
 
 func _ready() -> void:
+	# Sink/raise the entire pitch assembly (all children move with the node).
+	position.y = pitch_y_offset
+
+	_apply_dugout_cutout()
 	_setup_ad_panels()
 	_spawn_goals()
+
+func _apply_dugout_cutout() -> void:
+	var grass := get_node_or_null("PitchMesh") as MeshInstance3D
+	if grass == null:
+		return
+	var mat := grass.material_override as ShaderMaterial
+	if mat == null:
+		return
+	mat.set_shader_parameter("dugout_min_x", dugout_min_x)
+	mat.set_shader_parameter("dugout_max_x", dugout_max_x)
+	mat.set_shader_parameter("dugout_min_z", dugout_min_z)
+	mat.set_shader_parameter("dugout_max_z", dugout_max_z)
 
 func _process(delta: float) -> void:
 	if not enable_ad_boards or ad_textures.size() < 2:

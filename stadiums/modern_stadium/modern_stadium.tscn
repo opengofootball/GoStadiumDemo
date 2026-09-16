@@ -1,9 +1,74 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=13 format=3]
 
-[ext_resource type="Script" path="res://stadiums/modern_stadium/modern_stadium.gd" id="1_ms"]
-[ext_resource type="PackedScene" path="res://pitch/common_pitch.tscn" id="2_pitch"]
+[ext_resource type="PackedScene" path="res://pitch/common_pitch.tscn" id="1_pitch"]
+[ext_resource type="PackedScene" uid="uid://8dq071s13ieo" path="res://stadiums/modern_stadium/modern_stadium_part01.glb" id="2_p01"]
+[ext_resource type="PackedScene" uid="uid://oj7xtgk5dsjq" path="res://stadiums/modern_stadium/modern_stadium_part02.glb" id="3_p02"]
+[ext_resource type="PackedScene" uid="uid://kavw2bv038ox" path="res://stadiums/modern_stadium/modern_stadium_part03.glb" id="4_p03"]
+[ext_resource type="PackedScene" uid="uid://d1h081ble1be" path="res://stadiums/modern_stadium/modern_stadium_part04.glb" id="5_p04"]
+[ext_resource type="PackedScene" uid="uid://c3akmi0vo7srd" path="res://stadiums/modern_stadium/modern_stadium_part05.glb" id="6_p05"]
+[ext_resource type="PackedScene" uid="uid://buaim6ulnpyla" path="res://stadiums/modern_stadium/modern_stadium_part06.glb" id="7_p06"]
+[ext_resource type="PackedScene" uid="uid://dsephwaca8tuk" path="res://stadiums/modern_stadium/modern_stadium_part07.glb" id="8_p07"]
+[ext_resource type="PackedScene" uid="uid://dvck76lvow8oh" path="res://stadiums/modern_stadium/modern_stadium_part08.glb" id="9_p08"]
+[ext_resource type="PackedScene" uid="uid://cj8wrshxb0ayu" path="res://stadiums/modern_stadium/modern_stadium_part09.glb" id="10_p09"]
+[ext_resource type="PackedScene" uid="uid://df5igqg5w1wh6" path="res://stadiums/modern_stadium/modern_stadium_part10.glb" id="11_p10"]
 
 [node name="ModernStadium" type="Node3D"]
-script = ExtResource("1_ms")
 
-[node name="CommonPitch" parent="." instance=ExtResource("2_pitch")]
+[node name="CommonPitch" parent="." instance=ExtResource("1_pitch")]
+
+[node name="StadiumModel" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.10, 1.500, -2.40)
+
+[node name="Part01" parent="StadiumModel" instance=ExtResource("2_p01")]
+
+[node name="Part02" parent="StadiumModel" instance=ExtResource("3_p02")]
+
+[node name="Part03" parent="StadiumModel" instance=ExtResource("4_p03")]
+
+[node name="Part04" parent="StadiumModel" instance=ExtResource("5_p04")]
+
+[node name="Part05" parent="StadiumModel" instance=ExtResource("6_p05")]
+
+[node name="Part06" parent="StadiumModel" instance=ExtResource("7_p06")]
+
+[node name="Part07" parent="StadiumModel" instance=ExtResource("8_p07")]
+
+[node name="Part08" parent="StadiumModel" instance=ExtResource("9_p08")]
+
+[node name="Part09" parent="StadiumModel" instance=ExtResource("10_p09")]
+
+[node name="Part10" parent="StadiumModel" instance=ExtResource("11_p10")]
+
+[node name="Material2_136" parent="StadiumModel/Part05/Sketchfab_model/Collada visual scene group" index="5"]
+visible = false
+
+[node name="Material3_035" parent="StadiumModel/Part08/Sketchfab_model/Collada visual scene group" index="10"]
+visible = false
+
+[node name="Material2_140" parent="StadiumModel/Part07/Sketchfab_model/Collada visual scene group" index="5"]
+visible = false
+
+[node name="Material3_036" parent="StadiumModel/Part10/Sketchfab_model/Collada visual scene group" index="6"]
+visible = false
+
+[node name="Material3_037" parent="StadiumModel/Part03/Sketchfab_model/Collada visual scene group" index="9"]
+visible = false
+
+[node name="Material2_144" parent="StadiumModel/Part05/Sketchfab_model/Collada visual scene group" index="7"]
+visible = false
+
+[node name="Material3_034" parent="StadiumModel/Part09/Sketchfab_model/Collada visual scene group" index="11"]
+visible = false
+
+[node name="Material2_139" parent="StadiumModel/Part05/Sketchfab_model/Collada visual scene group" index="6"]
+visible = false
+
+[node name="Material2_141" parent="StadiumModel/Part10/Sketchfab_model/Collada visual scene group" index="4"]
+visible = false
+
+[node name="Material3_038" parent="StadiumModel/Part08/Sketchfab_model/Collada visual scene group" index="11"]
+visible = false
+
+[node name="Material2_133" parent="StadiumModel/Part02/Sketchfab_model/Collada visual scene group" index="6"]
+visible = false
+

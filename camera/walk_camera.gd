@@ -15,7 +15,7 @@ signal speed_changed(new_speed: float)
 signal mouse_capture_changed(captured: bool)
 
 func _ready() -> void:
-	far = 1200.0
+	far = 350.0
 	near = 0.15
 	capture_mouse()
 	_yaw = rotation.y

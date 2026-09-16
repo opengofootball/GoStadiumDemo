@@ -15,6 +15,13 @@ uniform float cloud_time_scale : hint_range(0.0, 20.0) = 1.0;
 uniform float cloud_time_offset : hint_range(0.0, 1000.0, 0.1) = 0.0;
 uniform vec2 cloud_direction = vec2(0.9, 1.0);
 uniform vec2 cloud_steps_range = vec2(192.0, 108.0);
+uniform int cloud_light_steps : hint_range(0, 6) = 6;
+// 0 = physical atmosphere only, 1 = cheap 2D cloud dome (PS4/console budget),
+// 2 = full volumetric raymarch (high-end PCs).
+uniform int cloud_mode = 2;
+uniform float cloud2d_density : hint_range(0.0, 2.0) = 0.9;
+uniform float cloud2d_scale = 0.0000006;
+uniform vec4 cloud2d_color : source_color = vec4(1.0, 1.0, 1.0, 0.85);
 uniform float clouds_screen_lod : hint_range(0.0, 1.0, 0.1) = 1.0;
 uniform vec4 cloud_modulate : source_color = vec4(1.0);
 uniform vec2 cloud_camera_position_mult = vec2(0.1, 0.2);
@@ -231,8 +238,10 @@ vec4 march(vec3 pos, vec3 end, vec3 dir, int depth) {
 
 		if (t > 0.0) {
 			// Calculate lighting, but only when we're in the cloud.
+			// `cloud_light_steps` controls the self-shadow marching cost:
+			// 6 = high quality, 2 = balanced, 1 = performance.
 			float lheight_fraction = 0.0;
-			for (int j = 0; j < 6; j++) {
+			for (int j = 0; j < cloud_light_steps; j++) {
 				lp += (ldir + RANDOM_VECTORS[j] * float(j)) * lss;
 				lheight_fraction = get_height_fraction_for_point(length(lp));
 				vec3 lweather = texture(cloud_map, lp.xz * WEATHER_SCALE + 0.5 + weather_pos).xyz;
@@ -260,9 +269,38 @@ vec4 march(vec3 pos, vec3 end, vec3 dir, int depth) {
 	return clamp(vec4(L, alpha), 0.0, 1.0);
 }
 
+// Cheap single-pass planar cloud dome: one weather-map fetch, no volumetric loop.
+// Used by cloud_mode == 1 (console / integrated GPU budget).
+vec4 clouds2d(vec3 dir, vec3 background) {
+	float t = 0.003 * cloud_time_offset * cloud_time_scale;
+	// Project the view ray onto a flat cloud layer ~1500 m above the camera.
+	float h = max(dir.y, 0.0001);
+	vec2 plane_pos = dir.xz / h * 1500.0;
+	vec2 uv = plane_pos * cloud2d_scale + vec2(t) * cloud_direction;
+	vec3 weather = texture(cloud_map, uv).xyz;
+	// Two-tone coverage from the weather map; coverage slider drives density.
+	float cover = weather.b * cloud_coverage * 2.0 * cloud2d_density;
+	float shape = smoothstep(0.35, 0.85, weather.r * 0.6 + weather.g * 0.4);
+	float alpha = clamp(cover * shape, 0.0, 1.0);
+	// Fade clouds out toward the horizon so they blend into the atmosphere.
+	alpha *= smoothstep(0.02, 0.25, dir.y);
+	// Very cheap sun lighting: brighter toward the sun, slightly grey in shadow.
+	float sun_face = max(dot(dir, normalize(LIGHT0_DIRECTION)), 0.0);
+	vec3 col = mix(cloud2d_color.rgb * vec3(0.55, 0.58, 0.65), cloud2d_color.rgb, sun_face * 0.7 + 0.3);
+	return vec4(col * LIGHT0_ENERGY * 0.001, alpha) * cloud_modulate;
+}
+
 vec4 clouds(vec3 dir, vec3 background, vec2 steps_in, float screen_x, vec3 camera) {
 	vec4 col;
 	if (dir.y > 0.0) {
+		if (cloud_mode == 0) {
+			// Physical atmosphere only: no cloud layer at all.
+			return vec4(0.0);
+		}
+		if (cloud_mode == 1) {
+			// Cheap planar 2D cloud dome (console / PS4 budget).
+			col = clouds2d(dir, background);
+		} else {
 		vec3 camera_position = vec3(0.0, GROUND_RADIUS, 0.0) + vec3(camera.x * cloud_camera_position_mult.x, camera.y * cloud_camera_position_mult.y + cloud_camera_height, camera.z * cloud_camera_position_mult.x);
 		vec3 start = camera_position + dir * intersect_sphere(camera_position, dir, SKY_BOTTOM_RADIUS);
 		vec3 end = camera_position + dir * intersect_sphere(camera_position, dir, SKY_TOP_RADIUS);
@@ -278,6 +316,7 @@ vec4 clouds(vec3 dir, vec3 background, vec2 steps_in, float screen_x, vec3 camer
 		// Blend distant clouds into the sky.
 		col.xyz = mix(clamp(col.xyz, vec3(0.0), vec3(1.0)), clamp(background, vec3(0.0), vec3(1.0)), smoothstep(0.6, 1.0, 1.0 - dir.y));
 		col = volume;
+		}
 	}
 
 	// Draw to quarter-resolution buffer for reflections.

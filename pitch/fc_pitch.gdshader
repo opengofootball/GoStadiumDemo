@@ -26,6 +26,18 @@ uniform float mow_darkness = 0.78; // darker alternate bands
 
 // White markings
 uniform vec4 line_color : source_color = vec4(1.0, 1.0, 1.0, 1.0);
+// Toggle the baked regulation lines on/off (side run-off planes are pure grass).
+uniform bool show_lines = true;
+
+// Dugout cutout: discard grass inside the two sunken team-dugout pits so it never
+// floods the seats/footwell. There are TWO dugouts (home & away) separated by a
+// midfield gap, so we bound them with both a min and max |Z| (not a single box).
+// Set dugout_max_z <= 0 to disable the cutout entirely (e.g. a stadium with a running
+// track and no dugout there). Bounds measured from the model's concrete pit walls.
+uniform float dugout_min_x = -39.1;   // back wall of the sunken pit
+uniform float dugout_max_x = -35.3;   // front curb of the sunken pit
+uniform float dugout_min_z = 8.25;    // inner edge (toward midfield) of each dugout
+uniform float dugout_max_z = 16.85;   // outer edge (toward the corner) of each dugout
 
 // Surface
 uniform float roughness_base = 0.86;
@@ -49,17 +61,26 @@ void fragment() {
 	grass *= shade;
 	grass *= grass_tint.rgb;
 
+	// Dugout cutout: discard grass inside the two sunken team-dugout pits so it never
+	// floods the seats/footwell. Bounded on BOTH min and max |Z| so the midfield gap
+	// between the home and away dugouts stays grassed (no hole).
+	float az = abs(world_pos.z);
+	if (dugout_max_z > 0.0 && world_pos.x >= dugout_min_x && world_pos.x <= dugout_max_x
+			&& az >= dugout_min_z && az <= dugout_max_z) {
+		discard;
+	}
+
 	// Regulation lines mapped from world XZ into the baked mask (0..1)
-	vec2 l_uv = (vec2(world_pos.x, world_pos.z) - lines_min) / lines_size;
-
-	// Sample with negative LOD bias (-1.5) to keep mipmaps razor sharp at grazing angles
-	vec4 lines = texture(pitch_lines_tex, l_uv, -1.5);
-
-	// Edge-threshold sharpening: removes the wide blurred halo caused by mipmap downsampling
-	// so the line stays thin (12 cm) at all viewing distances
-	float line_alpha = smoothstep(0.35, 0.75, lines.a);
-
-	vec3 base = mix(grass, line_color.rgb, line_alpha);
+	vec3 base = grass;
+	if (show_lines) {
+		vec2 l_uv = (vec2(world_pos.x, world_pos.z) - lines_min) / lines_size;
+		// Sample with negative LOD bias (-1.5) to keep mipmaps razor sharp at grazing angles
+		vec4 lines = texture(pitch_lines_tex, l_uv, -1.5);
+		// Edge-threshold sharpening: removes the wide blurred halo caused by mipmap downsampling
+		// so the line stays thin (12 cm) at all viewing distances
+		float line_alpha = smoothstep(0.35, 0.75, lines.a);
+		base = mix(grass, line_color.rgb, line_alpha);
+	}
 
 	ALBEDO = base;
 	ROUGHNESS = clamp(roughness_base - wetness * 0.4, 0.05, 1.0);

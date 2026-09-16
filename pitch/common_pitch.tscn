@@ -50,6 +50,7 @@ shape = SubResource("BoxShape3D_floor")
 
 [node name="AdPanel_Touch_W" type="Node3D" parent="AdPanels"]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -37.5, 0.525, 0)
+visible = false
 
 [node name="Front" type="MeshInstance3D" parent="AdPanels/AdPanel_Touch_W"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.071)

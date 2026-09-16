@@ -19,3 +19,8 @@ Godot_v4.6.3-stable_linux.x86_64
 stadiums/**/*.png
 stadiums/**/*.jpg
 stadiums/**/*.jpeg
+
+# Stadium models are split into parts each < 50 MB (see tools/split_glb.py), so the
+# .glb parts are versioned normally. The single pre-split source export (439 MB) is
+# kept out because it exceeds GitHub's 100 MB per-file hard limit.
+stadiums/**/modern_stadium.glb

@@ -26,13 +26,13 @@ environment = ExtResource("2_env")
 transform = Transform3D(0.965926, -0.183013, 0.183013, 0, 0.707107, 0.707107, -0.258819, -0.683013, 0.683013, 0, 100, 0)
 shadow_enabled = true
 shadow_bias = 0.03
-directional_shadow_mode = 2
-directional_shadow_max_distance = 250.0
+directional_shadow_mode = 1
+directional_shadow_max_distance = 80.0
 
 [node name="WalkCamera" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
 near = 0.15
-far = 1200.0
+far = 350.0
 script = ExtResource("3_cam")
 move_speed = 8.0
 sprint_factor = 3.0
