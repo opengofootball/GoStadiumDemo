@@ -13,14 +13,9 @@ extends Node3D
 ## banners from res://assets/ads/. Drag more PNGs into this array to extend the rotation.
 @export var ad_textures: Array[Texture2D] = []
 
-# Panels keep a constant horizontal tiling of sponsor logos across the board length.
-# Each banner image already contains several sponsor blocks, so tiling stays low.
-const TILES := {
-	"AdPanel_Touch_W": 2,
-	"AdPanel_Touch_E": 2,
-	"AdPanel_Goal_N": 1,
-	"AdPanel_Goal_S": 1,
-}
+## Panels keep a constant horizontal tiling of sponsor logos across the board length.
+## The repeat count is computed dynamically from the banner's aspect ratio and the
+## board dimensions so banners are never stretched (see _set_banner).
 
 var _touch_panels: Array[MeshInstance3D] = []
 var _goal_panels: Array[MeshInstance3D] = []
@@ -43,7 +38,6 @@ func _ready() -> void:
 				continue
 			# Duplicate so each panel owns its material and can show a different banner
 			var mat = mi.material_override.duplicate() as StandardMaterial3D
-			mat.uv1_scale = Vector3(TILES.get(mi.name, 4), 1.0, 1.0)
 			mi.material_override = mat
 			if mi.name.begins_with("AdPanel_Touch"):
 				_touch_panels.append(mi)
@@ -78,6 +72,23 @@ func _set_banner(mi: MeshInstance3D, tex: Texture2D) -> void:
 	mat.albedo_texture = tex
 	if mat.emission_enabled:
 		mat.emission_texture = tex
+
+	# Compute the number of horizontal repeats so each banner keeps its native aspect
+	# ratio and is never stretched. The board's physical size is taken from its QuadMesh.
+	var board_size := Vector2.ZERO
+	if mi.mesh is QuadMesh:
+		board_size = (mi.mesh as QuadMesh).size
+
+	var board_len: float = board_size.x
+	var board_h: float = board_size.y
+	var tw: int = tex.get_width()
+	var th: int = tex.get_height()
+
+	if board_len > 0.0 and board_h > 0.0 and tw > 0 and th > 0:
+		# One banner block spans (board_h * aspect) metres wide to keep the texture square.
+		var banner_width_m := board_h * (float(tw) / float(th))
+		var repeats := int(round(board_len / banner_width_m))
+		mat.uv1_scale = Vector3(maxi(1, repeats), 1.0, 1.0)
 
 func _ensure_textures() -> void:
 	if ad_textures.size() > 0:
