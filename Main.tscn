@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://main.gd" id="1_main"]
 [ext_resource type="Environment" path="res://sky/stadium_sky.tres" id="2_env"]
 [ext_resource type="Script" path="res://camera/walk_camera.gd" id="3_cam"]
-[ext_resource type="PackedScene" path="res://pitch/common_pitch.tscn" id="4_pitch"]
+[ext_resource type="PackedScene" path="res://stadiums/modern_stadium/modern_stadium.tscn" id="4_stadium"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
 bg_color = Color(0.08, 0.09, 0.12, 0.85)
@@ -37,7 +37,7 @@ script = ExtResource("3_cam")
 move_speed = 8.0
 sprint_factor = 3.0
 
-[node name="CommonPitch" parent="." instance=ExtResource("4_pitch")]
+[node name="ModernStadium" parent="." instance=ExtResource("4_stadium")]
 
 [node name="HUD" type="CanvasLayer" parent="."]
 
@@ -79,10 +79,10 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "Pitch"
 
-[node name="BtnSideline" type="Button" parent="HUD/MainPanel/VBox/ViewpointsRow"]
+[node name="BtnStand" type="Button" parent="HUD/MainPanel/VBox/ViewpointsRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Sideline"
+text = "Stand"
 
 [node name="BtnAerial" type="Button" parent="HUD/MainPanel/VBox/ViewpointsRow"]
 layout_mode = 2
@@ -239,7 +239,7 @@ text = "Loaded Stadium"
 horizontal_alignment = 1
 
 [connection signal="pressed" from="HUD/MainPanel/VBox/ViewpointsRow/BtnPitch" to="." method="teleport_to_viewpoint" binds= ["pitch"]]
-[connection signal="pressed" from="HUD/MainPanel/VBox/ViewpointsRow/BtnSideline" to="." method="teleport_to_viewpoint" binds= ["aerial"]]
+[connection signal="pressed" from="HUD/MainPanel/VBox/ViewpointsRow/BtnStand" to="." method="teleport_to_viewpoint" binds= ["stand"]]
 [connection signal="pressed" from="HUD/MainPanel/VBox/ViewpointsRow/BtnAerial" to="." method="teleport_to_viewpoint" binds= ["overview"]]
 [connection signal="pressed" from="HUD/MainPanel/VBox/ViewpointsRow/BtnGoalNorth" to="." method="teleport_to_viewpoint" binds= ["goal1"]]
 [connection signal="pressed" from="HUD/MainPanel/VBox/ViewpointsRow/BtnGoalSouth" to="." method="teleport_to_viewpoint" binds= ["goal2"]]

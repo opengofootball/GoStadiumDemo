@@ -1,15 +1,15 @@
 extends Node3D
 
-## Main scene for the isolated Common Pitch (real-world metres, 1 unit = 1 m).
-## The modern_stadium shell is NOT loaded for now. The CommonPitch node is a fully
-## self-contained module: turf + regulation lines, LED ad hoardings, corner flags,
-## ground collision and the two goals (spawned by CommonPitch from its own exported
-## goal_model_scene PackedScene).
+## Main scene (real-world metres, 1 unit = 1 m).
+## ModernStadium is the top-level gameplay node: it wraps the resized stadium shell
+## around the shared CommonPitch module (turf + regulation lines, LED ad hoardings,
+## corner flags, ground collision and the two goals). Everything is centred on the
+## world origin, so camera viewpoints and physics here use plain metric coordinates.
 
 @onready var world_env: WorldEnvironment = $WorldEnvironment
 @onready var sun_light: DirectionalLight3D = $SunLight
 @onready var walk_camera: WalkCamera = $WalkCamera
-@onready var common_pitch: Node3D = $CommonPitch
+@onready var modern_stadium: Node3D = $ModernStadium
 
 # UI nodes
 @onready var ui_panel: Control = $HUD/MainPanel
@@ -23,11 +23,12 @@ extends Node3D
 @onready var mouse_hint_label: Label = $HUD/MouseHint
 @onready var message_toast: Label = $HUD/MessageToast
 
-# Viewpoints (metres)
+# Viewpoints (metres). The stadium shell spans roughly X[-88, 90] Z[-105, 105] and
+# rises to ~27.5 m, so stand/aerial viewpoints sit inside the bowl above seat height.
 const VIEWPOINTS = {
 	"pitch":    { "pos": Vector3(0.0, 1.8, 0.0), "yaw": 0.0, "pitch": -0.05, "name": "Pitch Center" },
-	"aerial":   { "pos": Vector3(48.0, 9.0, 0.0), "yaw": PI * 0.5, "pitch": -0.12, "name": "Sideline View" },
-	"overview": { "pos": Vector3(0.0, 55.0, -95.0), "yaw": 0.0, "pitch": -0.5, "name": "Aerial Overview" },
+	"stand":    { "pos": Vector3(44.0, 8.0, 0.0), "yaw": PI * 0.5, "pitch": -0.10, "name": "East Stand" },
+	"overview": { "pos": Vector3(0.0, 45.0, 0.0), "yaw": 0.0, "pitch": -0.6, "name": "Aerial Overview" },
 	"goal1":    { "pos": Vector3(0.0, 1.8, -38.0), "yaw": 0.0, "pitch": 0.0, "name": "North Goal" },
 	"goal2":    { "pos": Vector3(0.0, 1.8, 38.0), "yaw": PI, "pitch": 0.0, "name": "South Goal" },
 }
@@ -40,7 +41,7 @@ func _ready() -> void:
 		sky_material = world_env.environment.sky.sky_material
 
 	if title_label:
-		title_label.text = "⚽ Common Pitch (130×90 m)"
+		title_label.text = "🏟️ Modern Stadium"
 	teleport_to_viewpoint("pitch")
 
 	if walk_camera:

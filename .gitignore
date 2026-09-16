@@ -13,3 +13,13 @@
 
 # Godot Engine executable binary
 Godot_v4.6.3-stable_linux.x86_64
+
+# Textures auto-extracted by the glTF importer next to stadium .glb files.
+# They are embedded inside the .glb, so we do not track the loose copies.
+stadiums/**/*.png
+stadiums/**/*.jpg
+stadiums/**/*.jpeg
+
+# Large stadium source models (385 MB). These exceed GitHub's file limits and are
+# kept locally / in the Windows folder. Enable Git LFS if you want them versioned.
+stadiums/**/*.glb
