@@ -49,11 +49,11 @@ const GOAL_MESH_FRONT_Z: float = 0.75
 
 # Viewpoints (metres)
 const VIEWPOINTS = {
-	"pitch": { "pos": Vector3(0.0, 1.8, 0.0), "yaw": 0.0, "pitch": -0.05, "name": "Pitch Center" },
-	"vip":   { "pos": Vector3(48.0, 9.0, 0.0), "yaw": PI * 0.5, "pitch": -0.12, "name": "VIP Grandstand" },
-	"roof":  { "pos": Vector3(0.0, 55.0, -95.0), "yaw": 0.0, "pitch": -0.5, "name": "Aerial Overview" },
-	"goal1": { "pos": Vector3(0.0, 1.8, -38.0), "yaw": 0.0, "pitch": 0.0, "name": "North Goal" },
-	"goal2": { "pos": Vector3(0.0, 1.8, 38.0), "yaw": PI, "pitch": 0.0, "name": "South Goal" },
+	"pitch":    { "pos": Vector3(0.0, 1.8, 0.0), "yaw": 0.0, "pitch": -0.05, "name": "Pitch Center" },
+	"aerial":   { "pos": Vector3(48.0, 9.0, 0.0), "yaw": PI * 0.5, "pitch": -0.12, "name": "Sideline View" },
+	"overview": { "pos": Vector3(0.0, 55.0, -95.0), "yaw": 0.0, "pitch": -0.5, "name": "Aerial Overview" },
+	"goal1":    { "pos": Vector3(0.0, 1.8, -38.0), "yaw": 0.0, "pitch": 0.0, "name": "North Goal" },
+	"goal2":    { "pos": Vector3(0.0, 1.8, 38.0), "yaw": PI, "pitch": 0.0, "name": "South Goal" },
 }
 
 var sky_material: ShaderMaterial = null
@@ -231,7 +231,7 @@ func _process(delta: float) -> void:
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("toggle_gui"):
 		ui_panel.visible = not ui_panel.visible
-	elif event.is_action_pressed("select_stadium_1"):
+	elif event.is_action_pressed("view_pitch"):
 		teleport_to_viewpoint("pitch")
 
 func _on_camera_speed_changed(new_speed: float) -> void:

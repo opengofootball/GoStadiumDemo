@@ -61,7 +61,7 @@ theme_override_constants/separation = 8
 [node name="Title" type="Label" parent="HUD/MainPanel/VBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
-text = "🏟️ Modern Stadium Walkthrough"
+text = "⚽ Common Pitch (130×90 m)"
 horizontal_alignment = 1
 
 [node name="HSeparator1" type="HSeparator" parent="HUD/MainPanel/VBox"]
@@ -81,25 +81,25 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "Pitch"
 
-[node name="BtnVIP" type="Button" parent="HUD/MainPanel/VBox/ViewpointsRow"]
+[node name="BtnSideline" type="Button" parent="HUD/MainPanel/VBox/ViewpointsRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "VIP"
+text = "Sideline"
 
-[node name="BtnRoof" type="Button" parent="HUD/MainPanel/VBox/ViewpointsRow"]
+[node name="BtnAerial" type="Button" parent="HUD/MainPanel/VBox/ViewpointsRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Roof"
+text = "Aerial"
 
-[node name="BtnSouth" type="Button" parent="HUD/MainPanel/VBox/ViewpointsRow"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "Goal S"
-
-[node name="BtnNorth" type="Button" parent="HUD/MainPanel/VBox/ViewpointsRow"]
+[node name="BtnGoalNorth" type="Button" parent="HUD/MainPanel/VBox/ViewpointsRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Goal N"
+
+[node name="BtnGoalSouth" type="Button" parent="HUD/MainPanel/VBox/ViewpointsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Goal S"
 
 [node name="HSeparator2" type="HSeparator" parent="HUD/MainPanel/VBox"]
 layout_mode = 2
@@ -241,10 +241,10 @@ text = "Loaded Stadium"
 horizontal_alignment = 1
 
 [connection signal="pressed" from="HUD/MainPanel/VBox/ViewpointsRow/BtnPitch" to="." method="teleport_to_viewpoint" binds= ["pitch"]]
-[connection signal="pressed" from="HUD/MainPanel/VBox/ViewpointsRow/BtnVIP" to="." method="teleport_to_viewpoint" binds= ["vip"]]
-[connection signal="pressed" from="HUD/MainPanel/VBox/ViewpointsRow/BtnRoof" to="." method="teleport_to_viewpoint" binds= ["roof"]]
-[connection signal="pressed" from="HUD/MainPanel/VBox/ViewpointsRow/BtnSouth" to="." method="teleport_to_viewpoint" binds= ["goal1"]]
-[connection signal="pressed" from="HUD/MainPanel/VBox/ViewpointsRow/BtnNorth" to="." method="teleport_to_viewpoint" binds= ["goal2"]]
+[connection signal="pressed" from="HUD/MainPanel/VBox/ViewpointsRow/BtnSideline" to="." method="teleport_to_viewpoint" binds= ["aerial"]]
+[connection signal="pressed" from="HUD/MainPanel/VBox/ViewpointsRow/BtnAerial" to="." method="teleport_to_viewpoint" binds= ["overview"]]
+[connection signal="pressed" from="HUD/MainPanel/VBox/ViewpointsRow/BtnGoalNorth" to="." method="teleport_to_viewpoint" binds= ["goal1"]]
+[connection signal="pressed" from="HUD/MainPanel/VBox/ViewpointsRow/BtnGoalSouth" to="." method="teleport_to_viewpoint" binds= ["goal2"]]
 [connection signal="value_changed" from="HUD/MainPanel/VBox/SpeedBox/SpeedSlider" to="." method="_on_speed_slider_value_changed"]
 [connection signal="value_changed" from="HUD/MainPanel/VBox/TimeBox/TimeSlider" to="." method="_on_time_slider_value_changed"]
 [connection signal="value_changed" from="HUD/MainPanel/VBox/CloudBox/CoverageSlider" to="." method="_on_coverage_slider_value_changed"]
